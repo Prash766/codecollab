@@ -1,8 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Moon, Sun, Menu, X} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { isDarkModeAtom, isSidebarOpenAtom, joinedClients } from "@/atoms/Editor";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { CodeAtom, isDarkModeAtom, isSidebarOpenAtom, joinedClients } from "@/atoms/Editor";
 import UserCard from "@/utils/UserCard";
 import { Socket } from "socket.io-client";
 import SidebarButtons from "@/utils/SidebarButtons";
@@ -19,6 +19,10 @@ export default function EditorPage() {
   const [isDarkMode, setIsDarkMode] = useRecoilState(isDarkModeAtom);
   const [isSidebarOpen, setIsSidebarOpen] = useRecoilState(isSidebarOpenAtom);
   const[newClients , setNewClients] = useRecoilState(joinedClients)
+  const codeRef = useRef<string | null>(null);
+
+
+
 
   const roomid = useRecoilValue(roomId);
   
@@ -60,6 +64,12 @@ export default function EditorPage() {
         }
         setNewClients(clients)
         
+        socketRef.current?.emit(EVENTS.SYNC_CODE , {
+          code:codeRef.current,
+          socketid
+
+        })
+  
 
       })
 
@@ -70,6 +80,7 @@ export default function EditorPage() {
             (client) => client.socketid!== socketid
           )
         })
+     
       })
 
 
@@ -126,7 +137,7 @@ export default function EditorPage() {
               </div>
             </div>
             <div className=" absolute space-y-2 bottom-4 left-4 right-4">
-              <SidebarButtons />
+              <SidebarButtons socketRef={socketRef}/>
             </div>
           </motion.div>
         )}
@@ -150,7 +161,7 @@ export default function EditorPage() {
           } bg-gray-100 dark:bg-gray-900 overflow-auto`}
         >
             
-  <CodeEditor socketRef ={socketRef}/>
+  <CodeEditor onCodeChange={(code)=>codeRef.current=code} socketRef ={socketRef}/>
   
          
         </main>
@@ -158,3 +169,5 @@ export default function EditorPage() {
     </div>
   );
 }
+
+

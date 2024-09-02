@@ -13,9 +13,11 @@ import { EVENTS } from "@/Events";
 import { roomId } from "@/atoms/JoinRoom";
 interface CodeEditorProps {
   socketRef: React.MutableRefObject<Socket | null>;
+  onCodeChange?: (code: string| null) => void; 
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ socketRef }) => {
+
+const CodeEditor: React.FC<CodeEditorProps> = ({ socketRef , onCodeChange}) => {
   const [isDarkMode] = useRecoilState(isDarkModeAtom);
   const codeEditorRef = useRef<HTMLTextAreaElement | null>(null);
   const editorInstanceRef = useRef<Codemirror.Editor | null>(null);
@@ -43,7 +45,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ socketRef }) => {
         editorInstanceRef.current.on("change", (instance, changes) => {
           const { origin } = changes;
           const codeGet = instance.getValue();
-          console.log("code value",codeGet, roomid)
+          console.log(codeGet)
+          onCodeChange?.(codeGet)
           if (origin !== "setValue") {
             socketRef.current?.emit(EVENTS.CODE_CHANGE, {
               roomid,
@@ -66,6 +69,12 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ socketRef }) => {
         editorInstanceRef.current?.setValue(codeGet);
       }
     });
+    socketRef.current?.on(EVENTS.SYNC_CODE , ({syncCode})=>{
+      if (syncCode !== null) {
+        editorInstanceRef.current?.setValue(syncCode);
+      }
+    })
+
   }, [socketRef.current]);
 
   return (
@@ -82,3 +91,5 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ socketRef }) => {
 };
 
 export default CodeEditor;
+
+

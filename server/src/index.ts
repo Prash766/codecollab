@@ -56,8 +56,19 @@ io.on("connection", (socket) => {
     delete userSocketMap[socket.id];
     socket.leave(Roomid);
   });
+
+  socket.on(EVENTS.SYNC_CODE , ({socketid , code})=>{
+    console.log(code)
+    io.to(socketid).emit(EVENTS.SYNC_CODE ,{syncCode:code})
+  })
+
+
+
+
 });
 
 server.listen(process.env.PORT, () => {
   console.log(`Server is running on ${process.env.PORT}`);
 });
+
+
