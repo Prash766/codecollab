@@ -7,3 +7,10 @@
   }
 }
 
+
+.CodeMirror {
+  border: 1px solid #eee;
+  height: 86vh; 
+  width: 100%;
+}
+

@@ -7,10 +7,10 @@ import { Toaster } from "@/components/ui/sonner"
 
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+
     <RecoilRoot>
     <Toaster position="bottom-center" />
     <App />
     </RecoilRoot>
-  </StrictMode>,
+  ,
 )
