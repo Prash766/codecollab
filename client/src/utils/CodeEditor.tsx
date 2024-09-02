@@ -75,6 +75,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ socketRef , onCodeChange}) => {
       }
     })
 
+    return ()=>{
+      socketRef.current?.off(EVENTS.CODE_CHANGE)
+
+    }
+
   }, [socketRef.current]);
 
   return (
